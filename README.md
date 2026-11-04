@@ -163,11 +163,13 @@ A task is *pending* if it is not completed. Every pending task that is assigned 
 `cp .env.example .env`
 5. Install dependencies:
 `npm install`
-6. Uncomment the `mongoose.connect(...)` line in `server.js`, then start the dev server:
+6. Start the server (it connects using `MONGODB_URI` from `.env`):
 `npm start`
 7. Deploy your API (see Tips) and check it with the autograder, see [Grading](#grading) and [Self-check with `submit.js`](#self-check-with-submitjs).
 
+Run `nvm use` in this folder to select Node 24. Run `npm test` for local API integration tests. The tests start a disposable MongoDB replica set and do not use or modify your Atlas database. The first test run may download MongoDB.
 
+The API uses transactions to keep task assignments and user pending lists consistent, including when a database operation fails. Reference: [Mongoose transaction documentation](https://mongoosejs.com/docs/transactions.html). This implementation was developed with OpenAI Codex assistance; see the course's LLM disclosure requirements below.
 
 ## 3. Tips
   - Start early!
