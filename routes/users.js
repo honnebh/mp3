@@ -59,7 +59,7 @@ router.delete('/:id', async (req, res) => {
         }, { session });
         await user.deleteOne({ session });
     });
-    res.json({ message: 'User deleted.', data: {} });
+    res.status(204).end();
 });
 
 module.exports = router;

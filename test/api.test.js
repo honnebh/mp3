@@ -38,6 +38,11 @@ async function request(method, path, body, status = 200) {
         headers: { 'Content-Type': 'application/json' },
         ...(body === undefined ? {} : { body: JSON.stringify(body) })
     });
+    if (status === 204) {
+        assert.equal(response.status, 204);
+        assert.equal(await response.text(), '');
+        return;
+    }
     const json = await response.json();
     assert.equal(response.status, status, JSON.stringify(json));
     assert.equal(typeof json.message, 'string');
@@ -120,7 +125,7 @@ test('task assignment, completion, reopening, reassignment, replacement defaults
     assert.equal(updated.description, '');
     assert.deepEqual((await request('GET', `/users/${b._id}`)).pendingTasks, []);
     await request('PUT', `/tasks/${t._id}`, { name: 'Delete me', deadline, assignedUser: a._id });
-    await request('DELETE', `/tasks/${t._id}`);
+    await request('DELETE', `/tasks/${t._id}`, undefined, 204);
     assert.deepEqual((await request('GET', `/users/${a._id}`)).pendingTasks, []);
     await request('GET', `/tasks/${t._id}`, undefined, 404);
 });
@@ -144,7 +149,7 @@ test('user creation and replacement move tasks, remove old assignments, and rena
     await request('PUT', `/users/${b._id}`, { name: 'Bob', email: b.email });
     assert.equal((await request('GET', `/tasks/${second._id}`)).assignedUser, '');
     assert.equal((await request('GET', `/tasks/${done._id}`)).assignedUser, b._id);
-    await request('DELETE', `/users/${b._id}`);
+    await request('DELETE', `/users/${b._id}`, undefined, 204);
     const unassigned = await request('GET', `/tasks/${done._id}`);
     assert.equal(unassigned.assignedUser, '');
     assert.equal(unassigned.assignedUserName, 'unassigned');
